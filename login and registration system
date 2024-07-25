@@ -1,0 +1,85 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+bool isRegistered(const string& username) {
+    ifstream file("users.txt");
+    string line;
+    while (getline(file, line)) {
+        if (line == username) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void registerUser() {
+    string username, password;
+    cout << "Enter username: ";
+    cin >> username;
+    cout << "Enter password: ";
+    cin >> password;
+
+    if (isRegistered(username)) {
+        cout << "Username already exists. Try a different one." << endl;
+        return;
+    }
+
+    ofstream file("users.txt", ios::app);
+    if (file.is_open()) {
+        file << username << endl;
+        file << password << endl;
+        file.close();
+        cout << "Registration successful!" << endl;
+    }
+    else {
+        cout << "Unable to open file for writing." << endl;
+    }
+}
+
+bool loginUser() {
+    string username, password, storedUsername, storedPassword;
+    cout << "Enter username: ";
+    cin >> username;
+    cout << "Enter password: ";
+    cin >> password;
+
+    ifstream file("users.txt");
+    if (file.is_open()) {
+        while (getline(file, storedUsername) && getline(file, storedPassword)) {
+            if (storedUsername == username && storedPassword == password) {
+                cout << "Login successful!" << endl;
+                file.close();
+                return true;
+            }
+        }
+        file.close();
+    }
+    else {
+        cout << "Unable to open file for reading." << endl;
+    }
+
+    cout << "Invalid username or password." << endl;
+    return false;
+}
+
+int main() {
+    int choice;
+
+    cout << "1. Register\n2. Login\nEnter your choice: ";
+    cin >> choice;
+
+    if (choice == 1) {
+        registerUser();
+    }
+    else if (choice == 2) {
+        loginUser();
+    }
+    else {
+        cout << "Invalid choice." << endl;
+    }
+
+    return 0;
+}
